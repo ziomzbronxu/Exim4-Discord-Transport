@@ -35,14 +35,14 @@ chown exim:exim /usr/local/bin/exim_to_discord.py
 To implement this transport for a specific user (e.g., `xyz`) while maintaining normal inbox delivery, add the following to your Exim configuration:
 
 ### The Transport
-Add this block to the **transports** section of your configuration (e.g., `/etc/exim4/conf.d/transport/` or `exim.conf`):
+Add this block to the **transports** section of your configuration (e.g., /etc/exim4/exim4.conf.template, or `/etc/exim4/conf.d/transport/`):
 
 ```exim
 discord_pipe:
   driver = pipe
   command = /usr/local/bin/exim_to_discord.py
-  user = exim
-  group = exim
+  user = Debian-exim
+  group = Debian-exim
   return_fail_output = true
   log_output = true
   temp_errors = *
@@ -61,6 +61,13 @@ discord_forward_xyz:
 
 ### Why use `unseen`?
 The `unseen` directive is the magic here. It tells Exim to process this router (sending the mail to Discord) and then immediately pass the message to the *next* router as if nothing happened. This ensures the user `xyz` receives the email in their standard inbox **and** on Discord.
+
+---
+
+## 3. Apply Changes
+    
+* Test the configuration: ```exim -bV``` (to check for syntax errors).
+* Restart Exim: ```systemctl restart exim4```.
 
 ---
 
